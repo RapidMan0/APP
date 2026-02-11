@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   TextInput,
@@ -7,12 +7,12 @@ import {
   ActivityIndicator,
   Text,
   TouchableOpacity,
-} from 'react-native';
-import MovieCard from '../components/MovieCard';
-import { searchMovies } from '../services/tmdbService';
+} from "react-native";
+import MovieCard from "../components/MovieCard";
+import { searchMovies } from "../services/tmdbService";
 
 const SearchScreen = ({ navigation }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
@@ -27,7 +27,11 @@ const SearchScreen = ({ navigation }) => {
     setLoading(true);
     try {
       const response = await searchMovies(query);
-      setMovies(response.data.results);
+      // Фильтруем результаты: оставляем только фильмы с рейтингом > 0
+      const filteredMovies = response.data.results.filter(
+        (movie) => movie.vote_average > 0
+      );
+      setMovies(filteredMovies);
       setSearched(true);
     } catch (err) {
       console.error(err);
@@ -37,7 +41,7 @@ const SearchScreen = ({ navigation }) => {
   };
 
   const handleMoviePress = (movie) => {
-    navigation.navigate('MovieDetails', { movieId: movie.id });
+    navigation.navigate("MovieDetails", { movieId: movie.id });
   };
 
   return (
@@ -81,36 +85,36 @@ const SearchScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   searchContainer: {
     padding: 12,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: "#e0e0e0",
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
-    color: '#333',
+    color: "#333",
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
   },
   centerContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   columnWrapper: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: 5,
   },
   noResultsText: {
     fontSize: 16,
-    color: '#999',
+    color: "#999",
   },
 });
 
