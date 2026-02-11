@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   FlatList,
@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   RefreshControl,
+  PanResponder,
 } from "react-native";
 import MovieCard from "../components/MovieCard";
 import { getPopularMovies, getTopRatedMovies } from "../services/tmdbService";
@@ -19,10 +20,56 @@ const HomeScreen = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState("popular");
   const [currentPage, setCurrentPage] = useState(1); // Добавлено состояние для текущей страницы
 
+  const activeTabRef = useRef("popular");
+  const isMountedRef = useRef(true);
+  
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        const { dx } = gestureState;
+        
+        // Свайп вправо (dx > 50) - переход на предыдущую таблетку
+        if (dx > 50) {
+          if (activeTabRef.current === "topRated") {
+            setMovies([]);
+            setCurrentPage(1);
+            setActiveTab("popular");
+          }
+        }
+        // Свайп влево (dx < -50) - переход на следующую таблетку
+        else if (dx < -50) {
+          if (activeTabRef.current === "popular") {
+            setMovies([]);
+            setCurrentPage(1);
+            setActiveTab("topRated");
+          }
+        }
+      },
+    })
+  ).current;
+
+  // Обновляем ref при изменении activeTab
+  useEffect(() => {
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
+
+  // Cleanup на unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const fetchMovies = async (tab = "popular", page = 1) => {
     try {
       setError(null);
-      setLoading(true);
+      if (page === 1) {
+        setLoading(true);
+      }
       let response;
 
       if (tab === "popular") {
@@ -31,13 +78,22 @@ const HomeScreen = ({ navigation }) => {
         response = await getTopRatedMovies(page);
       }
 
-      setMovies((prevMovies) => [...prevMovies, ...response.data.results]); // Обновление списка фильмов
+      // Проверяем, что компонент все еще смонтирован и таб не изменился
+      if (isMountedRef.current && activeTabRef.current === tab) {
+        if (page === 1) {
+          setMovies(response.data.results); // Замена, а не добавление для первой страницы
+        } else {
+          setMovies((prevMovies) => [...prevMovies, ...response.data.results]); // Добавление для последующих страниц
+        }
+      }
     } catch (err) {
       setError("Ошибка загрузки фильмов");
       console.error(err);
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
   };
 
@@ -79,7 +135,7 @@ const HomeScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} {...panResponder.panHandlers}>
       {/* Таблетки */}
       <View style={styles.tabsContainer}>
         <TouchableOpacity
