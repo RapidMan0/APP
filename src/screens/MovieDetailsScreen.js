@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Linking,
   TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from '../constants/config';
 import { getMovieDetails } from '../services/tmdbService';
@@ -93,9 +94,11 @@ const MovieDetailsScreen = ({ route }) => {
         {movie.credits?.cast && movie.credits.cast.length > 0 && (
           <>
             <Text style={styles.sectionTitle}>Основной состав</Text>
-            <View style={styles.castContainer}>
-              {movie.credits.cast.slice(0, 5).map((actor) => (
-                <View key={actor.id} style={styles.castMember}>
+            <FlatList
+              data={movie.credits.cast.slice(0, 10)}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item: actor }) => (
+                <View style={styles.castMember}>
                   {actor.profile_path && (
                     <Image
                       source={{
@@ -111,8 +114,12 @@ const MovieDetailsScreen = ({ route }) => {
                     {actor.character}
                   </Text>
                 </View>
-              ))}
-            </View>
+              )}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              scrollEventThrottle={16}
+              contentContainerStyle={styles.castListContent}
+            />
           </>
         )}
 
@@ -209,9 +216,8 @@ const styles = StyleSheet.create({
     color: '#666',
     lineHeight: 22,
   },
-  castContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
+  castListContent: {
+    paddingRight: 16,
   },
   castMember: {
     marginRight: 12,
