@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -9,9 +9,9 @@ import {
   Linking,
   TouchableOpacity,
   FlatList,
-} from 'react-native';
-import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from '../constants/config';
-import { getMovieDetails } from '../services/tmdbService';
+} from "react-native";
+import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from "../constants/config";
+import { getMovieDetails } from "../services/tmdbService";
 
 const MovieDetailsScreen = ({ route }) => {
   const { movieId } = route.params;
@@ -25,7 +25,7 @@ const MovieDetailsScreen = ({ route }) => {
         const response = await getMovieDetails(movieId);
         setMovie(response.data);
       } catch (err) {
-        setError('Ошибка загрузки деталей фильма');
+        setError("Ошибка загрузки деталей фильма");
         console.error(err);
       } finally {
         setLoading(false);
@@ -73,7 +73,9 @@ const MovieDetailsScreen = ({ route }) => {
           <Text style={styles.year}>
             {new Date(movie.release_date).getFullYear()}
           </Text>
-          {movie.runtime && <Text style={styles.runtime}>{movie.runtime} мин</Text>}
+          {movie.runtime && (
+            <Text style={styles.runtime}>{movie.runtime} мин</Text>
+          )}
         </View>
 
         {movie.genres && movie.genres.length > 0 && (
@@ -88,7 +90,7 @@ const MovieDetailsScreen = ({ route }) => {
 
         <Text style={styles.sectionTitle}>Описание</Text>
         <Text style={styles.overview}>
-          {movie.overview || 'Описание недоступно'}
+          {movie.overview || "Описание недоступно"}
         </Text>
 
         {movie.credits?.cast && movie.credits.cast.length > 0 && (
@@ -149,15 +151,15 @@ const MovieDetailsScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   centerContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   backdrop: {
-    width: '100%',
+    width: "100%",
     height: 250,
   },
   content: {
@@ -165,55 +167,55 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 10,
   },
   infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 12,
   },
   rating: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginRight: 12,
-    color: '#e50914',
+    color: "#e50914",
   },
   year: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginRight: 12,
   },
   runtime: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
   },
   genresContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginBottom: 16,
   },
   genre: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 16,
     marginRight: 8,
     marginBottom: 8,
     fontSize: 12,
-    color: '#555',
+    color: "#555",
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#333',
+    fontWeight: "700",
+    color: "#333",
     marginTop: 16,
     marginBottom: 10,
   },
   overview: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     lineHeight: 22,
   },
   castListContent: {
@@ -221,7 +223,7 @@ const styles = StyleSheet.create({
   },
   castMember: {
     marginRight: 12,
-    alignItems: 'center',
+    alignItems: "center",
     width: 80,
   },
   castPhoto: {
@@ -232,40 +234,40 @@ const styles = StyleSheet.create({
   },
   actorName: {
     fontSize: 11,
-    fontWeight: '600',
-    color: '#333',
-    textAlign: 'center',
+    fontWeight: "600",
+    color: "#333",
+    textAlign: "center",
   },
   characterName: {
     fontSize: 10,
-    color: '#999',
-    textAlign: 'center',
+    color: "#999",
+    textAlign: "center",
   },
   statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginTop: 20,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    borderTopColor: "#f0f0f0",
   },
   stat: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   statLabel: {
     fontSize: 12,
-    color: '#999',
+    color: "#999",
     marginBottom: 4,
   },
   statValue: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   errorText: {
-    color: '#e50914',
+    color: "#e50914",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 

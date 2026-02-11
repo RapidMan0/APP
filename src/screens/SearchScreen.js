@@ -29,7 +29,7 @@ const SearchScreen = ({ navigation }) => {
       const response = await searchMovies(query);
       // Фильтруем результаты: оставляем только фильмы с рейтингом > 0
       const filteredMovies = response.data.results.filter(
-        (movie) => movie.vote_average > 0
+        (movie) => movie.vote_average > 0,
       );
       setMovies(filteredMovies);
       setSearched(true);

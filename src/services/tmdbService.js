@@ -1,45 +1,45 @@
-import axios from 'axios';
-import { TMDB_API_KEY, TMDB_BASE_URL } from '../constants/config';
+import axios from "axios";
+import { TMDB_API_KEY, TMDB_BASE_URL } from "../constants/config";
 
 const tmdbClient = axios.create({
   baseURL: TMDB_BASE_URL,
   params: {
     api_key: TMDB_API_KEY,
-    language: 'ru-RU',
+    language: "ru-RU",
   },
 });
 
 // Получить популярные фильмы
 export const getPopularMovies = (page = 1) => {
-  return tmdbClient.get('/movie/popular', {
+  return tmdbClient.get("/movie/popular", {
     params: { page },
   });
 };
 
 // Получить фильмы в кино (на данный момент)
 export const getNowPlayingMovies = (page = 1) => {
-  return tmdbClient.get('/movie/now_playing', {
+  return tmdbClient.get("/movie/now_playing", {
     params: { page },
   });
 };
 
 // Получить лучшие рейтинговые фильмы
 export const getTopRatedMovies = (page = 1) => {
-  return tmdbClient.get('/movie/top_rated', {
+  return tmdbClient.get("/movie/top_rated", {
     params: { page },
   });
 };
 
 // Получить предстоящие фильмы
 export const getUpcomingMovies = (page = 1) => {
-  return tmdbClient.get('/movie/upcoming', {
+  return tmdbClient.get("/movie/upcoming", {
     params: { page },
   });
 };
 
 // Поиск фильма по названию
 export const searchMovies = (query, page = 1) => {
-  return tmdbClient.get('/search/movie', {
+  return tmdbClient.get("/search/movie", {
     params: {
       query,
       page,
@@ -51,7 +51,7 @@ export const searchMovies = (query, page = 1) => {
 export const getMovieDetails = (movieId) => {
   return tmdbClient.get(`/movie/${movieId}`, {
     params: {
-      append_to_response: 'credits,recommendations',
+      append_to_response: "credits,recommendations",
     },
   });
 };

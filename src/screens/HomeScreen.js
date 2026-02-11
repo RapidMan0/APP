@@ -22,7 +22,7 @@ const HomeScreen = ({ navigation }) => {
 
   const activeTabRef = useRef("popular");
   const isMountedRef = useRef(true);
-  
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -31,7 +31,7 @@ const HomeScreen = ({ navigation }) => {
       },
       onPanResponderRelease: (evt, gestureState) => {
         const { dx } = gestureState;
-        
+
         // Свайп вправо (dx > 50) - переход на предыдущую таблетку
         if (dx > 50) {
           if (activeTabRef.current === "topRated") {
@@ -49,7 +49,7 @@ const HomeScreen = ({ navigation }) => {
           }
         }
       },
-    })
+    }),
   ).current;
 
   // Обновляем ref при изменении activeTab
@@ -147,7 +147,10 @@ const HomeScreen = ({ navigation }) => {
           }}
         >
           <Text
-            style={[styles.tabText, activeTab === "popular" && styles.activeTabText]}
+            style={[
+              styles.tabText,
+              activeTab === "popular" && styles.activeTabText,
+            ]}
           >
             Популярные
           </Text>
@@ -162,7 +165,10 @@ const HomeScreen = ({ navigation }) => {
           }}
         >
           <Text
-            style={[styles.tabText, activeTab === "topRated" && styles.activeTabText]}
+            style={[
+              styles.tabText,
+              activeTab === "topRated" && styles.activeTabText,
+            ]}
           >
             Лучшие
           </Text>
