@@ -96,7 +96,7 @@ const MovieDetailsScreen = ({ route }) => {
             <Text style={styles.sectionTitle}>Основной состав</Text>
             <FlatList
               data={movie.credits.cast.slice(0, 10)}
-              keyExtractor={(item) => item.id.toString()}
+              keyExtractor={(item, index) => `${item.id}-${index}`}
               renderItem={({ item: actor }) => (
                 <View style={styles.castMember}>
                   {actor.profile_path && (
