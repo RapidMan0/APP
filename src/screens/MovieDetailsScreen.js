@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginRight: 12,
-    color: "#e50914",
+    color: "#00aaffff",
   },
   year: {
     fontSize: 14,
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginRight: 8,
     marginBottom: 8,
-    fontSize: 12,
+    fontSize: 14,
     color: "#555",
   },
   sectionTitle: {

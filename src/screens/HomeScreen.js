@@ -25,23 +25,25 @@ const HomeScreen = ({ navigation }) => {
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
-        return Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (_evt, gestureState) => {
+        const isHorizontalSwipe = Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 5;
+        return isHorizontalSwipe;
       },
-      onPanResponderRelease: (evt, gestureState) => {
+      onPanResponderTerminationRequest: () => true,
+      onPanResponderRelease: (_evt, gestureState) => {
         const { dx } = gestureState;
 
-        // Свайп вправо (dx > 50) - переход на предыдущую таблетку
-        if (dx > 50) {
+        // Свайп вправо (dx > 30) - переход на предыдущую таблетку
+        if (dx > 40) {
           if (activeTabRef.current === "topRated") {
             setMovies([]);
             setCurrentPage(1);
             setActiveTab("popular");
           }
         }
-        // Свайп влево (dx < -50) - переход на следующую таблетку
-        else if (dx < -50) {
+        // Свайп влево (dx < -30) - переход на следующую таблетку
+        else if (dx < -40) {
           if (activeTabRef.current === "popular") {
             setMovies([]);
             setCurrentPage(1);
@@ -101,6 +103,18 @@ const HomeScreen = ({ navigation }) => {
     fetchMovies(activeTab, currentPage);
   }, [activeTab, currentPage]);
 
+  const handleTabPress = (tabName) => {
+    if (activeTab === tabName) {
+      // Если таб уже активен - делаем рефреш
+      handleRefresh();
+    } else {
+      // Если таб другой - переключаемся
+      setActiveTab(tabName);
+      setCurrentPage(1);
+      setMovies([]);
+    }
+  };
+
   const handleRefresh = () => {
     setRefreshing(true);
     setMovies([]); // Сброс списка фильмов при обновлении
@@ -140,11 +154,7 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.tabsContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === "popular" && styles.activeTab]}
-          onPress={() => {
-            setActiveTab("popular");
-            setCurrentPage(1); // Сброс страницы при смене вкладки
-            setMovies([]); // Сброс списка фильмов
-          }}
+          onPress={() => handleTabPress("popular")}
         >
           <Text
             style={[
@@ -158,11 +168,7 @@ const HomeScreen = ({ navigation }) => {
 
         <TouchableOpacity
           style={[styles.tab, activeTab === "topRated" && styles.activeTab]}
-          onPress={() => {
-            setActiveTab("topRated");
-            setCurrentPage(1); // Сброс страницы при смене вкладки
-            setMovies([]); // Сброс списка фильмов
-          }}
+          onPress={() => handleTabPress("topRated")}
         >
           <Text
             style={[
