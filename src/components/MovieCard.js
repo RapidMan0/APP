@@ -1,31 +1,38 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Card, Text, useTheme } from "react-native-paper";
 import { TMDB_IMAGE_BASE_URL } from "../constants/config";
 
 const MovieCard = ({ movie, onPress }) => {
+  const { colors } = useTheme();
   const posterUrl = `${TMDB_IMAGE_BASE_URL}${movie.poster_path}`;
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Image
+    <Card style={styles.container} onPress={onPress}>
+      <Card.Cover
         source={{ uri: posterUrl }}
         style={styles.poster}
         resizeMode="cover"
       />
-      <View style={styles.info}>
-        <Text style={styles.title} numberOfLines={2}>
-          {movie.title}
-        </Text>
-        <View style={styles.ratingYearContainer}>
-          <Text style={styles.rating}>
-            ⭐ {movie.vote_average?.toFixed(1) || "N/A"}
+      <Card.Content style={styles.content}>
+        <View style={styles.titleContainer}>
+          <Text variant="titleSmall" numberOfLines={2} style={styles.title}>
+            {movie.title}
           </Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <View style={styles.ratingBadge}>
+            <Text style={styles.ratingText}>
+              ⭐ {movie.vote_average?.toFixed(1) || "N/A"}
+            </Text>
+          </View>
           <Text style={styles.year}>
             {new Date(movie.release_date).getFullYear() || "N/A"}
           </Text>
         </View>
-      </View>
-    </TouchableOpacity>
+      </Card.Content>
+    </Card>
   );
 };
 
@@ -33,37 +40,48 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 8,
-    borderRadius: 8,
-    overflow: "hidden",
-    backgroundColor: "#f0f0f0",
   },
   poster: {
-    width: "100%",
-    height: 240,
+    height: 300,
   },
-  info: {
-    padding: 10,
+  content: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  titleContainer: {
+    height: 44,
+    justifyContent: "flex-start",
+    marginBottom: 8,
   },
   title: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 5,
-    height: 40, // фиксированная высота для заголовка
+    fontWeight: "600",
+    lineHeight: 20,
   },
-  ratingYearContainer: {
+  infoRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
   },
-  rating: {
+  ratingBadge: {
+    backgroundColor: "rgba(0, 170, 255, 0.1)",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  ratingText: {
     fontSize: 12,
-    color: "#666",
-    marginBottom: 3,
+    fontWeight: "600",
+    color: "#00aaff",
   },
   year: {
-    fontSize: 11,
+    fontSize: 12,
     color: "#999",
+    fontWeight: "500",
   },
 });
 

@@ -1,12 +1,10 @@
 import { useState } from "react";
 import {
   View,
-  TextInput,
   FlatList,
   StyleSheet,
-  ActivityIndicator,
-  Text,
 } from "react-native";
+import { TextInput, ActivityIndicator, Text } from "react-native-paper";
 import MovieCard from "../components/MovieCard";
 import { searchMovies } from "../services/tmdbService";
 
@@ -49,18 +47,18 @@ const SearchScreen = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Поиск фильмов..."
-          placeholderTextColor="#999"
           value={searchQuery}
           onChangeText={(text) => {
             setSearchQuery(text);
             handleSearch(text);
           }}
+          mode="outlined"
         />
       </View>
 
       {loading ? (
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#09b9e5" />
+          <ActivityIndicator size="large" />
         </View>
       ) : searched && movies.length === 0 ? (
         <View style={styles.centerContainer}>
@@ -94,13 +92,6 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: "#fff",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-    color: "#333",
-    borderWidth: 1,
-    borderColor: "#ddd",
   },
   centerContainer: {
     flex: 1,

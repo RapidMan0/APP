@@ -2,23 +2,27 @@ import { useState, useEffect, useRef } from "react";
 import {
   View,
   FlatList,
-  TouchableOpacity,
-  Text,
-  ActivityIndicator,
   StyleSheet,
   RefreshControl,
   PanResponder,
 } from "react-native";
+import {
+  Button,
+  ActivityIndicator,
+  Text,
+  useTheme,
+} from "react-native-paper";
 import MovieCard from "../components/MovieCard";
 import { getPopularMovies, getTopRatedMovies } from "../services/tmdbService";
 
 const HomeScreen = ({ navigation }) => {
+  const { colors } = useTheme();
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("popular");
-  const [currentPage, setCurrentPage] = useState(1); // Добавлено состояние для текущей страницы
+  const [currentPage, setCurrentPage] = useState(1);
 
   const activeTabRef = useRef("popular");
   const isMountedRef = useRef(true);
@@ -152,33 +156,21 @@ const HomeScreen = ({ navigation }) => {
     <View style={styles.container} {...panResponder.panHandlers}>
       {/* Таблетки */}
       <View style={styles.tabsContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "popular" && styles.activeTab]}
+        <Button
+          mode={activeTab === "popular" ? "contained" : "outlined"}
           onPress={() => handleTabPress("popular")}
+          style={styles.tab}
         >
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === "popular" && styles.activeTabText,
-            ]}
-          >
-            Популярные
-          </Text>
-        </TouchableOpacity>
+          Популярные
+        </Button>
 
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "topRated" && styles.activeTab]}
+        <Button
+          mode={activeTab === "topRated" ? "contained" : "outlined"}
           onPress={() => handleTabPress("topRated")}
+          style={styles.tab}
         >
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === "topRated" && styles.activeTabText,
-            ]}
-          >
-            Лучшие
-          </Text>
-        </TouchableOpacity>
+          Лучшие
+        </Button>
       </View>
 
       {/* Список фильмов */}
@@ -193,8 +185,8 @@ const HomeScreen = ({ navigation }) => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
-        onEndReached={handleLoadMore} // Обработчик для загрузки дополнительных фильмов
-        onEndReachedThreshold={0.5} // Порог для срабатывания загрузки
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
       />
     </View>
   );
@@ -217,26 +209,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
+    gap: 12,
   },
   tab: {
     flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginHorizontal: 6,
-    borderRadius: 20,
-    backgroundColor: "#f5f5f5",
-    alignItems: "center",
-  },
-  activeTab: {
-    backgroundColor: "#e50914",
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#666",
-  },
-  activeTabText: {
-    color: "#fff",
   },
   columnWrapper: {
     justifyContent: "space-between",

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import {
   View,
-  Text,
   FlatList,
-  ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import {
+  ActivityIndicator,
+  Text,
+} from "react-native-paper";
 import { getGenres, discoverMoviesByGenre } from "../services/tmdbService";
 import MovieCard from "../components/MovieCard";
 
@@ -102,7 +104,7 @@ const GenresScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.header}>Выберите жанр:</Text>
       {loadingGenres ? (
-        <ActivityIndicator size="large" color="#09b2e5" />
+        <ActivityIndicator size="large" />
       ) : (
         <View style={{ minHeight: 56, marginBottom: 16 }}>
           <FlatList
@@ -161,7 +163,6 @@ const GenresScreen = ({ navigation }) => {
             loadingMovies ? (
               <ActivityIndicator
                 size="large"
-                color="#e50914"
                 style={{ marginVertical: 20 }}
               />
             ) : null

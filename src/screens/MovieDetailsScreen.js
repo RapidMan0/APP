@@ -3,13 +3,10 @@ import {
   View,
   ScrollView,
   Image,
-  Text,
   StyleSheet,
-  ActivityIndicator,
-  Linking,
-  TouchableOpacity,
   FlatList,
 } from "react-native";
+import { ActivityIndicator, Text } from "react-native-paper";
 import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from "../constants/config";
 import { getMovieDetails } from "../services/tmdbService";
 
@@ -38,7 +35,7 @@ const MovieDetailsScreen = ({ route }) => {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#e50914" />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
