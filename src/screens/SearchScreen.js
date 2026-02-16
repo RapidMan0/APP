@@ -4,15 +4,18 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
-import { TextInput, ActivityIndicator, Text } from "react-native-paper";
+import { TextInput, ActivityIndicator, Text, useTheme } from "react-native-paper";
 import MovieCard from "../components/MovieCard";
 import { searchMovies } from "../services/tmdbService";
+import { useAppTheme } from "../context/ThemeContext";
 
 const SearchScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  useAppTheme();
+  const { colors } = useTheme();
 
   const handleSearch = async (query) => {
     if (!query.trim()) {
@@ -42,11 +45,12 @@ const SearchScreen = ({ navigation }) => {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderBottomColor: colors.outline }]}>
         <TextInput
           style={styles.input}
           placeholder="Поиск фильмов..."
+          placeholderTextColor={colors.onSurfaceVariant}
           value={searchQuery}
           onChangeText={(text) => {
             setSearchQuery(text);
@@ -62,7 +66,7 @@ const SearchScreen = ({ navigation }) => {
         </View>
       ) : searched && movies.length === 0 ? (
         <View style={styles.centerContainer}>
-          <Text style={styles.noResultsText}>Фильмы не найдены</Text>
+          <Text style={[styles.noResultsText, { color: colors.onSurfaceVariant }]}>Фильмы не найдены</Text>
         </View>
       ) : (
         <FlatList
@@ -82,16 +86,12 @@ const SearchScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   searchContainer: {
     padding: 12,
-    backgroundColor: "#f5f5f5",
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
   },
   input: {
-    backgroundColor: "#fff",
   },
   centerContainer: {
     flex: 1,
@@ -104,7 +104,6 @@ const styles = StyleSheet.create({
   },
   noResultsText: {
     fontSize: 16,
-    color: "#999",
   },
 });
 

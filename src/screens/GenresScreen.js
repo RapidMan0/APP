@@ -8,8 +8,10 @@ import {
 import {
   ActivityIndicator,
   Text,
+  useTheme,
 } from "react-native-paper";
 import { getGenres, discoverMoviesByGenre } from "../services/tmdbService";
+import { useAppTheme } from "../context/ThemeContext";
 import MovieCard from "../components/MovieCard";
 
 const GenresScreen = ({ navigation }) => {
@@ -20,6 +22,8 @@ const GenresScreen = ({ navigation }) => {
   const [loadingMovies, setLoadingMovies] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const { theme } = useAppTheme();
+  const { colors } = useTheme();
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -105,8 +109,8 @@ const GenresScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Выберите жанр:</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.header, { color: colors.onSurface }]}>Выберите жанр:</Text>
       {loadingGenres ? (
         <ActivityIndicator size="large" />
       ) : (
@@ -121,6 +125,10 @@ const GenresScreen = ({ navigation }) => {
                 style={[
                   styles.genreItem,
                   selectedGenreId === item.id && styles.selectedGenre,
+                  {
+                    backgroundColor: selectedGenreId === item.id ? colors.primary : colors.surface,
+                    borderColor: colors.primary,
+                  }
                 ]}
                 onPress={() => handleMoviePress(item.id)}
               >
@@ -128,6 +136,9 @@ const GenresScreen = ({ navigation }) => {
                   style={[
                     styles.genreText,
                     selectedGenreId === item.id && styles.selectedGenreText,
+                    {
+                      color: selectedGenreId === item.id ? '#fff' : colors.primary,
+                    }
                   ]}
                 >
                   {item.name}
@@ -139,7 +150,7 @@ const GenresScreen = ({ navigation }) => {
         </View>
       )}
       {selectedGenreId && (
-        <Text style={styles.selectedLabel}>Фильмы по жанру:</Text>
+        <Text style={[styles.selectedLabel, { color: colors.onSurface }]}>Фильмы по жанру:</Text>
       )}
       {error && !loadingMovies && (
         <Text style={styles.errorText}>{error}</Text>
@@ -178,7 +189,6 @@ const GenresScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     paddingTop: 16,
   },
   header: {
@@ -186,16 +196,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     marginLeft: 16,
-    color: "#333",
   },
   genresList: {
     paddingHorizontal: 8,
     marginBottom: 16,
   },
   genreItem: {
-    backgroundColor: "#fff",
     borderWidth: 2,
-    borderColor: "#e50914",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
@@ -210,23 +217,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedGenre: {
-    backgroundColor: "#e50914",
-    borderColor: "#e50914",
   },
   genreText: {
     fontSize: 15,
-    color: "#e50914",
     fontWeight: "600",
   },
   selectedGenreText: {
-    color: "#fff",
   },
   selectedLabel: {
     fontSize: 16,
     fontWeight: "600",
     marginLeft: 16,
     marginBottom: 8,
-    color: "#333",
   },
   columnWrapper: {
     justifyContent: "space-between",

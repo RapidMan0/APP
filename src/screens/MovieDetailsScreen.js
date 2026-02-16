@@ -6,12 +6,15 @@ import {
   StyleSheet,
   FlatList,
 } from "react-native";
-import { ActivityIndicator, Text } from "react-native-paper";
+import { ActivityIndicator, Text, useTheme } from "react-native-paper";
 import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from "../constants/config";
 import { getMovieDetails } from "../services/tmdbService";
+import { useAppTheme } from "../context/ThemeContext";
 
 const MovieDetailsScreen = ({ route }) => {
   const { movieId } = route.params;
+  const { theme } = useAppTheme();
+  const { colors } = useTheme();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,7 +37,7 @@ const MovieDetailsScreen = ({ route }) => {
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
+      <View style={[styles.centerContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -42,7 +45,7 @@ const MovieDetailsScreen = ({ route }) => {
 
   if (error || !movie) {
     return (
-      <View style={styles.centerContainer}>
+      <View style={[styles.centerContainer, { backgroundColor: colors.background }]}>
         <Text style={styles.errorText}>{error}</Text>
       </View>
     );
@@ -53,7 +56,10 @@ const MovieDetailsScreen = ({ route }) => {
     : null;
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      style={[styles.container, { backgroundColor: colors.background }]} 
+      showsVerticalScrollIndicator={false}
+    >
       {backdropUrl && (
         <Image
           source={{ uri: backdropUrl }}
@@ -62,37 +68,46 @@ const MovieDetailsScreen = ({ route }) => {
         />
       )}
 
-      <View style={styles.content}>
-        <Text style={styles.title}>{movie.title}</Text>
+      <View style={[styles.content, { backgroundColor: colors.surface }]}>
+        <Text style={[styles.title, { color: colors.onSurface }]}>{movie.title}</Text>
 
         <View style={styles.infoRow}>
-          <Text style={styles.rating}>⭐ {movie.vote_average?.toFixed(1)}</Text>
-          <Text style={styles.year}>
+          <Text style={[styles.rating, { color: colors.primary }]}>⭐ {movie.vote_average?.toFixed(1)}</Text>
+          <Text style={[styles.year, { color: colors.onSurfaceVariant }]}>
             {new Date(movie.release_date).getFullYear()}
           </Text>
           {movie.runtime && (
-            <Text style={styles.runtime}>{movie.runtime} мин</Text>
+            <Text style={[styles.runtime, { color: colors.onSurfaceVariant }]}>{movie.runtime} мин</Text>
           )}
         </View>
 
         {movie.genres && movie.genres.length > 0 && (
           <View style={styles.genresContainer}>
             {movie.genres.map((genre) => (
-              <Text key={genre.id} style={styles.genre}>
+              <Text 
+                key={genre.id} 
+                style={[
+                  styles.genre, 
+                  { 
+                    backgroundColor: colors.primaryContainer,
+                    color: colors.onSurfaceVariant
+                  }
+                ]}
+              >
                 {genre.name}
               </Text>
             ))}
           </View>
         )}
 
-        <Text style={styles.sectionTitle}>Описание</Text>
-        <Text style={styles.overview}>
+        <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Описание</Text>
+        <Text style={[styles.overview, { color: colors.onSurfaceVariant }]}>
           {movie.overview || "Описание недоступно"}
         </Text>
 
         {movie.credits?.cast && movie.credits.cast.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>Основной состав</Text>
+            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Основной состав</Text>
             <FlatList
               data={movie.credits.cast.slice(0, 10)}
               keyExtractor={(item, index) => `${item.id}-${index}`}
@@ -106,10 +121,10 @@ const MovieDetailsScreen = ({ route }) => {
                       style={styles.castPhoto}
                     />
                   )}
-                  <Text style={styles.actorName} numberOfLines={1}>
+                  <Text style={[styles.actorName, { color: colors.onSurface }]} numberOfLines={1}>
                     {actor.name}
                   </Text>
-                  <Text style={styles.characterName} numberOfLines={1}>
+                  <Text style={[styles.characterName, { color: colors.onSurfaceVariant }]} numberOfLines={1}>
                     {actor.character}
                   </Text>
                 </View>
@@ -123,17 +138,17 @@ const MovieDetailsScreen = ({ route }) => {
         )}
 
         {movie.budget > 0 && (
-          <View style={styles.statsContainer}>
+          <View style={[styles.statsContainer, { borderTopColor: colors.outline }]}>
             <View style={styles.stat}>
-              <Text style={styles.statLabel}>Бюджет</Text>
-              <Text style={styles.statValue}>
+              <Text style={[styles.statLabel, { color: colors.onSurfaceVariant }]}>Бюджет</Text>
+              <Text style={[styles.statValue, { color: colors.onSurface }]}>
                 ${(movie.budget / 1000000).toFixed(1)}M
               </Text>
             </View>
             {movie.revenue > 0 && (
               <View style={styles.stat}>
-                <Text style={styles.statLabel}>Сборы</Text>
-                <Text style={styles.statValue}>
+                <Text style={[styles.statLabel, { color: colors.onSurfaceVariant }]}>Сборы</Text>
+                <Text style={[styles.statValue, { color: colors.onSurface }]}>
                   ${(movie.revenue / 1000000).toFixed(1)}M
                 </Text>
               </View>
@@ -148,7 +163,6 @@ const MovieDetailsScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   centerContainer: {
     flex: 1,
@@ -161,11 +175,11 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#333",
     marginBottom: 10,
   },
   infoRow: {
@@ -177,42 +191,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginRight: 12,
-    color: "#00aaffff",
   },
   year: {
     fontSize: 14,
-    color: "#666",
     marginRight: 12,
   },
   runtime: {
     fontSize: 14,
-    color: "#666",
   },
   genresContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginBottom: 16,
+    alignItems: "center",
+    gap: 8,
   },
   genre: {
-    backgroundColor: "#f0f0f0",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 16,
-    marginRight: 8,
-    marginBottom: 8,
-    fontSize: 14,
-    color: "#555",
+    fontSize: 13,
+    fontWeight: "500",
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#333",
     marginTop: 16,
     marginBottom: 10,
   },
   overview: {
     fontSize: 14,
-    color: "#666",
     lineHeight: 22,
   },
   castListContent: {
@@ -232,12 +240,10 @@ const styles = StyleSheet.create({
   actorName: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#333",
     textAlign: "center",
   },
   characterName: {
     fontSize: 10,
-    color: "#999",
     textAlign: "center",
   },
   statsContainer: {
@@ -246,20 +252,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
   },
   stat: {
     alignItems: "center",
   },
   statLabel: {
     fontSize: 12,
-    color: "#999",
     marginBottom: 4,
   },
   statValue: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
   },
   errorText: {
     color: "#e50914",

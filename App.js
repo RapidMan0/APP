@@ -3,31 +3,28 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PaperProvider, MD3LightTheme, Appbar } from "react-native-paper";
+import { PaperProvider, Appbar } from "react-native-paper";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import HomeScreen from "./src/screens/HomeScreen";
 import SearchScreen from "./src/screens/SearchScreen";
 import MovieDetailsScreen from "./src/screens/MovieDetailsScreen";
 import GenresScreen from "./src/screens/GenresScreen";
-
-const theme = {
-  ...MD3LightTheme,
-  colors: {
-    ...MD3LightTheme.colors,
-    primary: "#e50914",
-    secondary: "#09b2e5",
-  },
-};
+import { ThemeProvider, useAppTheme } from "./src/context/ThemeContext";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 // Кастомный header для HomeStack
 function HomeHeader({ navigation, title }) {
+  const { isDarkMode, toggleTheme } = useAppTheme();
   return (
     <Appbar.Header>
       <Appbar.Content title={title} />
+      <Appbar.Action
+        icon={isDarkMode ? "white-balance-sunny" : "moon-waning-crescent"}
+        onPress={toggleTheme}
+      />
     </Appbar.Header>
   );
 }
@@ -43,8 +40,9 @@ function SearchHeader({ navigation, title }) {
 }
 
 function HomeStack() {
+  const { theme } = useAppTheme();
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }} edges={["top"]}>
       <Stack.Navigator
         screenOptions={({ navigation }) => ({
           header: ({ tintColor }) => (
@@ -74,8 +72,9 @@ function HomeStack() {
 }
 
 function SearchStack() {
+  const { theme } = useAppTheme();
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }} edges={["top"]}>
       <Stack.Navigator
         screenOptions={({ navigation }) => ({
           header: ({ navigation: navProp }) => (
@@ -105,8 +104,9 @@ function SearchStack() {
 }
 
 function GenresStack() {
+  const { theme } = useAppTheme();
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }} edges={["top"]}>
       <Stack.Navigator
         screenOptions={({ navigation }) => ({
           header: ({ navigation: navProp }) => (
@@ -135,7 +135,9 @@ function GenresStack() {
   );
 }
 
-export default function App() {
+function App() {
+  const { theme } = useAppTheme();
+
   return (
     <PaperProvider theme={theme}>
       <StatusBar barStyle="dark-content" />
@@ -146,8 +148,8 @@ export default function App() {
             tabBarActiveTintColor: "#e50914",
             tabBarInactiveTintColor: "#999",
             tabBarStyle: {
-              backgroundColor: "#fff",
-              borderTopColor: "#f0f0f0",
+              backgroundColor: theme.colors.surface,
+              borderTopColor: theme.colors.outline,
             },
             tabBarIcon: ({ focused, color, size }) => {
               let iconName;
@@ -155,7 +157,9 @@ export default function App() {
               if (route.name === "Home") {
                 iconName = focused ? "movie" : "movie-outline";
               } else if (route.name === "Genres") {
-                iconName = focused ? "format-list-bulleted" : "format-list-bulleted-square";
+                iconName = focused
+                  ? "format-list-bulleted"
+                  : "format-list-bulleted-square";
               } else if (route.name === "Search") {
                 iconName = "magnify";
               }
@@ -196,3 +200,13 @@ export default function App() {
     </PaperProvider>
   );
 }
+
+function AppWithTheme() {
+  return (
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  );
+}
+
+export default AppWithTheme;

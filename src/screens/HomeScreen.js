@@ -14,9 +14,11 @@ import {
 } from "react-native-paper";
 import MovieCard from "../components/MovieCard";
 import { getPopularMovies, getTopRatedMovies } from "../services/tmdbService";
+import { useAppTheme } from "../context/ThemeContext";
 
 const HomeScreen = ({ navigation }) => {
   const { colors } = useTheme();
+  const { theme } = useAppTheme();
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -84,12 +86,17 @@ const HomeScreen = ({ navigation }) => {
         response = await getTopRatedMovies(page);
       }
 
+      // Фильтруем фильмы: оставляем только с рейтингом > 0
+      const filteredResults = response.data.results.filter(
+        (movie) => movie.vote_average > 0
+      );
+
       // Проверяем, что компонент все еще смонтирован и таб не изменился
       if (isMountedRef.current && activeTabRef.current === tab) {
         if (page === 1) {
-          setMovies(response.data.results); // Замена, а не добавление для первой страницы
+          setMovies(filteredResults); // Замена, а не добавление для первой страницы
         } else {
-          setMovies((prevMovies) => [...prevMovies, ...response.data.results]); // Добавление для последующих страниц
+          setMovies((prevMovies) => [...prevMovies, ...filteredResults]); // Добавление для последующих страниц
         }
       }
     } catch (err) {
@@ -153,9 +160,9 @@ const HomeScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container} {...panResponder.panHandlers}>
+    <View style={[styles.container, { backgroundColor: colors.background }]} {...panResponder.panHandlers}>
       {/* Таблетки */}
-      <View style={styles.tabsContainer}>
+      <View style={[styles.tabsContainer, { backgroundColor: colors.surface, borderBottomColor: colors.outline }]}>
         <Button
           mode={activeTab === "popular" ? "contained" : "outlined"}
           onPress={() => handleTabPress("popular")}
@@ -195,7 +202,6 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   centerContainer: {
     flex: 1,
@@ -206,9 +212,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingHorizontal: 10,
     paddingVertical: 12,
-    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
     gap: 12,
   },
   tab: {
