@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  ScrollView,
-  Image,
-  StyleSheet,
-  FlatList,
-} from "react-native";
+import { View, ScrollView, Image, StyleSheet, FlatList } from "react-native";
 import { ActivityIndicator, Text, useTheme } from "react-native-paper";
 import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from "../constants/config";
 import { getMovieDetails } from "../services/tmdbService";
@@ -37,7 +31,9 @@ const MovieDetailsScreen = ({ route }) => {
 
   if (loading) {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: colors.background }]}>
+      <View
+        style={[styles.centerContainer, { backgroundColor: colors.background }]}
+      >
         <ActivityIndicator size="large" />
       </View>
     );
@@ -45,7 +41,9 @@ const MovieDetailsScreen = ({ route }) => {
 
   if (error || !movie) {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: colors.background }]}>
+      <View
+        style={[styles.centerContainer, { backgroundColor: colors.background }]}
+      >
         <Text style={styles.errorText}>{error}</Text>
       </View>
     );
@@ -56,8 +54,8 @@ const MovieDetailsScreen = ({ route }) => {
     : null;
 
   return (
-    <ScrollView 
-      style={[styles.container, { backgroundColor: colors.background }]} 
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.background }]}
       showsVerticalScrollIndicator={false}
     >
       {backdropUrl && (
@@ -69,29 +67,35 @@ const MovieDetailsScreen = ({ route }) => {
       )}
 
       <View style={[styles.content, { backgroundColor: colors.surface }]}>
-        <Text style={[styles.title, { color: colors.onSurface }]}>{movie.title}</Text>
+        <Text style={[styles.title, { color: colors.onSurface }]}>
+          {movie.title}
+        </Text>
 
         <View style={styles.infoRow}>
-          <Text style={[styles.rating, { color: colors.primary }]}>⭐ {movie.vote_average?.toFixed(1)}</Text>
+          <Text style={[styles.rating, { color: colors.primary }]}>
+            ⭐ {movie.vote_average?.toFixed(1)}
+          </Text>
           <Text style={[styles.year, { color: colors.onSurfaceVariant }]}>
             {new Date(movie.release_date).getFullYear()}
           </Text>
           {movie.runtime && (
-            <Text style={[styles.runtime, { color: colors.onSurfaceVariant }]}>{movie.runtime} мин</Text>
+            <Text style={[styles.runtime, { color: colors.onSurfaceVariant }]}>
+              {movie.runtime} мин
+            </Text>
           )}
         </View>
 
         {movie.genres && movie.genres.length > 0 && (
           <View style={styles.genresContainer}>
             {movie.genres.map((genre) => (
-              <Text 
-                key={genre.id} 
+              <Text
+                key={genre.id}
                 style={[
-                  styles.genre, 
-                  { 
+                  styles.genre,
+                  {
                     backgroundColor: colors.primaryContainer,
-                    color: colors.onSurfaceVariant
-                  }
+                    color: colors.onSurfaceVariant,
+                  },
                 ]}
               >
                 {genre.name}
@@ -100,14 +104,18 @@ const MovieDetailsScreen = ({ route }) => {
           </View>
         )}
 
-        <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Описание</Text>
+        <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>
+          Описание
+        </Text>
         <Text style={[styles.overview, { color: colors.onSurfaceVariant }]}>
           {movie.overview || "Описание недоступно"}
         </Text>
 
         {movie.credits?.cast && movie.credits.cast.length > 0 && (
           <>
-            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Основной состав</Text>
+            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>
+              Основной состав
+            </Text>
             <FlatList
               data={movie.credits.cast.slice(0, 10)}
               keyExtractor={(item, index) => `${item.id}-${index}`}
@@ -121,10 +129,19 @@ const MovieDetailsScreen = ({ route }) => {
                       style={styles.castPhoto}
                     />
                   )}
-                  <Text style={[styles.actorName, { color: colors.onSurface }]} numberOfLines={1}>
+                  <Text
+                    style={[styles.actorName, { color: colors.onSurface }]}
+                    numberOfLines={1}
+                  >
                     {actor.name}
                   </Text>
-                  <Text style={[styles.characterName, { color: colors.onSurfaceVariant }]} numberOfLines={1}>
+                  <Text
+                    style={[
+                      styles.characterName,
+                      { color: colors.onSurfaceVariant },
+                    ]}
+                    numberOfLines={1}
+                  >
                     {actor.character}
                   </Text>
                 </View>
@@ -138,16 +155,26 @@ const MovieDetailsScreen = ({ route }) => {
         )}
 
         {movie.budget > 0 && (
-          <View style={[styles.statsContainer, { borderTopColor: colors.outline }]}>
+          <View
+            style={[styles.statsContainer, { borderTopColor: colors.outline }]}
+          >
             <View style={styles.stat}>
-              <Text style={[styles.statLabel, { color: colors.onSurfaceVariant }]}>Бюджет</Text>
+              <Text
+                style={[styles.statLabel, { color: colors.onSurfaceVariant }]}
+              >
+                Бюджет
+              </Text>
               <Text style={[styles.statValue, { color: colors.onSurface }]}>
                 ${(movie.budget / 1000000).toFixed(1)}M
               </Text>
             </View>
             {movie.revenue > 0 && (
               <View style={styles.stat}>
-                <Text style={[styles.statLabel, { color: colors.onSurfaceVariant }]}>Сборы</Text>
+                <Text
+                  style={[styles.statLabel, { color: colors.onSurfaceVariant }]}
+                >
+                  Сборы
+                </Text>
                 <Text style={[styles.statValue, { color: colors.onSurface }]}>
                   ${(movie.revenue / 1000000).toFixed(1)}M
                 </Text>

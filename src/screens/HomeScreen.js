@@ -6,12 +6,7 @@ import {
   RefreshControl,
   PanResponder,
 } from "react-native";
-import {
-  Button,
-  ActivityIndicator,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { Button, ActivityIndicator, Text, useTheme } from "react-native-paper";
 import MovieCard from "../components/MovieCard";
 import { getPopularMovies, getTopRatedMovies } from "../services/tmdbService";
 import { useAppTheme } from "../context/ThemeContext";
@@ -33,7 +28,9 @@ const HomeScreen = ({ navigation }) => {
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_evt, gestureState) => {
-        const isHorizontalSwipe = Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 5;
+        const isHorizontalSwipe =
+          Math.abs(gestureState.dx) > Math.abs(gestureState.dy) &&
+          Math.abs(gestureState.dx) > 5;
         return isHorizontalSwipe;
       },
       onPanResponderTerminationRequest: () => true,
@@ -88,7 +85,7 @@ const HomeScreen = ({ navigation }) => {
 
       // Фильтруем фильмы: оставляем только с рейтингом > 0
       const filteredResults = response.data.results.filter(
-        (movie) => movie.vote_average > 0
+        (movie) => movie.vote_average > 0,
       );
 
       // Проверяем, что компонент все еще смонтирован и таб не изменился
@@ -133,9 +130,12 @@ const HomeScreen = ({ navigation }) => {
     fetchMovies(activeTab, 1);
   };
 
-  const handleMoviePress = useCallback((movie) => {
-    navigation.navigate("MovieDetails", { movieId: movie.id });
-  }, [navigation]);
+  const handleMoviePress = useCallback(
+    (movie) => {
+      navigation.navigate("MovieDetails", { movieId: movie.id });
+    },
+    [navigation],
+  );
 
   const handleLoadMore = () => {
     if (!loading) {
@@ -160,9 +160,20 @@ const HomeScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]} {...panResponder.panHandlers}>
+    <View
+      style={[styles.container, { backgroundColor: colors.background }]}
+      {...panResponder.panHandlers}
+    >
       {/* Таблетки */}
-      <View style={[styles.tabsContainer, { backgroundColor: colors.surface, borderBottomColor: colors.outline }]}>
+      <View
+        style={[
+          styles.tabsContainer,
+          {
+            backgroundColor: colors.surface,
+            borderBottomColor: colors.outline,
+          },
+        ]}
+      >
         <Button
           mode={activeTab === "popular" ? "contained" : "outlined"}
           onPress={() => handleTabPress("popular")}
