@@ -60,3 +60,20 @@ export const getMovieDetails = (movieId) => {
 export const getMovieVideos = (movieId) => {
   return tmdbClient.get(`/movie/${movieId}/videos`);
 };
+
+// Получить жанры фильмов
+export const getGenres = async () => {
+  return await axios.get(
+    `https://api.themoviedb.org/3/genre/movie/list?api_key=${TMDB_API_KEY}&language=ru-RU`
+  );
+};
+
+// Получить фильмы по жанру
+export const discoverMoviesByGenre = async (genreId, page = 1) => {
+  return await tmdbClient.get("/discover/movie", {
+    params: {
+      with_genres: genreId,
+      page,
+    },
+  });
+};

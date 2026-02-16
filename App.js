@@ -9,6 +9,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import HomeScreen from "./src/screens/HomeScreen";
 import SearchScreen from "./src/screens/SearchScreen";
 import MovieDetailsScreen from "./src/screens/MovieDetailsScreen";
+import GenresScreen from "./src/screens/GenresScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -81,6 +82,36 @@ function SearchStack() {
   );
 }
 
+function GenresStack() {
+  return (
+    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: { backgroundColor: "#fff" },
+          headerTintColor: "#000000",
+          headerTitleStyle: { fontWeight: "bold" },
+        }}
+      >
+        <Stack.Screen
+          name="GenresList"
+          component={GenresScreen}
+          options={{
+            title: "Жанры",
+            headerTitleAlign: "center",
+          }}
+        />
+        <Stack.Screen
+          name="MovieDetails"
+          component={MovieDetailsScreen}
+          options={{
+            title: "Детали фильма",
+          }}
+        />
+      </Stack.Navigator>
+    </SafeAreaView>
+  );
+}
+
 export default function App() {
   return (
     <>
@@ -100,6 +131,8 @@ export default function App() {
 
               if (route.name === "Home") {
                 iconName = focused ? "film" : "film-outline";
+              } else if (route.name === "Genres") {
+                iconName = focused ? "list" : "list-outline";
               } else if (route.name === "Search") {
                 iconName = focused ? "search" : "search-outline";
               }
@@ -113,6 +146,13 @@ export default function App() {
             component={HomeStack}
             options={{
               tabBarLabel: "Главная",
+            }}
+          />
+          <Tab.Screen
+            name="Genres"
+            component={GenresStack}
+            options={{
+              tabBarLabel: "Жанры",
             }}
           />
           <Tab.Screen

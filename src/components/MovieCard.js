@@ -16,12 +16,14 @@ const MovieCard = ({ movie, onPress }) => {
         <Text style={styles.title} numberOfLines={2}>
           {movie.title}
         </Text>
-        <Text style={styles.rating}>
-          ⭐ {movie.vote_average?.toFixed(1) || "N/A"}
-        </Text>
-        <Text style={styles.year}>
-          {new Date(movie.release_date).getFullYear() || "N/A"}
-        </Text>
+        <View style={styles.ratingYearContainer}>
+          <Text style={styles.rating}>
+            ⭐ {movie.vote_average?.toFixed(1) || "N/A"}
+          </Text>
+          <Text style={styles.year}>
+            {new Date(movie.release_date).getFullYear() || "N/A"}
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -47,6 +49,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
     marginBottom: 5,
+    height: 40, // фиксированная высота для заголовка
+  },
+  ratingYearContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   rating: {
     fontSize: 12,
