@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   TextInput,
@@ -6,7 +6,6 @@ import {
   StyleSheet,
   ActivityIndicator,
   Text,
-  TouchableOpacity,
 } from "react-native";
 import MovieCard from "../components/MovieCard";
 import { searchMovies } from "../services/tmdbService";
