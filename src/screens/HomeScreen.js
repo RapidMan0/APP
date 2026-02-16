@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   FlatList,
@@ -126,9 +126,9 @@ const HomeScreen = ({ navigation }) => {
     fetchMovies(activeTab, 1);
   };
 
-  const handleMoviePress = (movie) => {
+  const handleMoviePress = useCallback((movie) => {
     navigation.navigate("MovieDetails", { movieId: movie.id });
-  };
+  }, [navigation]);
 
   const handleLoadMore = () => {
     if (!loading) {
@@ -178,7 +178,7 @@ const HomeScreen = ({ navigation }) => {
         data={movies}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <MovieCard movie={item} onPress={() => handleMoviePress(item)} />
+          <MovieCard movie={item} onPress={handleMoviePress} />
         )}
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}

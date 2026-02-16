@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   View,
   FlatList,
@@ -37,9 +37,9 @@ const SearchScreen = ({ navigation }) => {
     }
   };
 
-  const handleMoviePress = (movie) => {
+  const handleMoviePress = useCallback((movie) => {
     navigation.navigate("MovieDetails", { movieId: movie.id });
-  };
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -69,7 +69,7 @@ const SearchScreen = ({ navigation }) => {
           data={movies}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <MovieCard movie={item} onPress={() => handleMoviePress(item)} />
+            <MovieCard movie={item} onPress={handleMoviePress} />
           )}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}

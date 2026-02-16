@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import { TMDB_IMAGE_BASE_URL } from "../constants/config";
@@ -6,9 +6,11 @@ import { TMDB_IMAGE_BASE_URL } from "../constants/config";
 const MovieCard = ({ movie, onPress }) => {
   const { colors } = useTheme();
   const posterUrl = `${TMDB_IMAGE_BASE_URL}${movie.poster_path}`;
+  
+  const handlePress = useCallback(() => onPress(movie), [onPress, movie]);
 
   return (
-    <Card style={styles.container} onPress={onPress}>
+    <Card style={styles.container} onPress={handlePress}>
       <Card.Cover
         source={{ uri: posterUrl }}
         style={styles.poster}

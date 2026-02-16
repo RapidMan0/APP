@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   FlatList,
@@ -56,7 +56,7 @@ const GenresScreen = ({ navigation }) => {
     }
   }, [selectedGenreId]);
 
-  const handleGenrePress = (genreId) => {
+  const handleMoviePress = useCallback((genreId) => {
     setSelectedGenreId(genreId);
     setLoadingMovies(true);
     setError(null);
@@ -77,7 +77,11 @@ const GenresScreen = ({ navigation }) => {
       .finally(() => {
         setLoadingMovies(false);
       });
-  };
+  }, []);
+
+  const handleMovieCardPress = useCallback((movie) => {
+    navigation.navigate("MovieDetails", { movieId: movie.id });
+  }, [navigation]);
 
   const handleLoadMore = () => {
     if (!loadingMovies && selectedGenreId) {
@@ -118,7 +122,7 @@ const GenresScreen = ({ navigation }) => {
                   styles.genreItem,
                   selectedGenreId === item.id && styles.selectedGenre,
                 ]}
-                onPress={() => handleGenrePress(item.id)}
+                onPress={() => handleMoviePress(item.id)}
               >
                 <Text
                   style={[
@@ -149,9 +153,7 @@ const GenresScreen = ({ navigation }) => {
           renderItem={({ item }) => (
             <MovieCard
               movie={item}
-              onPress={() =>
-                navigation.navigate("MovieDetails", { movieId: item.id })
-              }
+              onPress={handleMovieCardPress}
             />
           )}
           numColumns={2}
