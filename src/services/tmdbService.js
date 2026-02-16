@@ -64,7 +64,7 @@ export const getMovieVideos = (movieId) => {
 // Получить жанры фильмов
 export const getGenres = async () => {
   return await axios.get(
-    `https://api.themoviedb.org/3/genre/movie/list?api_key=${TMDB_API_KEY}&language=ru-RU`
+    `https://api.themoviedb.org/3/genre/movie/list?api_key=${TMDB_API_KEY}&language=ru-RU`,
   );
 };
 

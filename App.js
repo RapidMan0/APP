@@ -33,7 +33,7 @@ function HomeStack() {
           component={HomeScreen}
           options={{
             title: "Movie Space",
-            headerTitleAlign: 'center',
+            headerTitleAlign: "center",
           }}
         />
         <Stack.Screen
@@ -67,7 +67,7 @@ function SearchStack() {
           component={SearchScreen}
           options={{
             title: "Поиск фильмов",
-            headerTitleAlign: 'center',
+            headerTitleAlign: "center",
           }}
         />
         <Stack.Screen
