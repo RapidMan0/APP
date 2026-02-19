@@ -19,11 +19,12 @@ const Tab = createBottomTabNavigator();
 function HomeHeader({ navigation, title }) {
   const { isDarkMode, toggleTheme } = useAppTheme();
   return (
-    <Appbar.Header>
-      <Appbar.Content title={title} />
+    <Appbar.Header style={{ height: 56, paddingHorizontal: 12 }} statusBarHeight={0}>
+      <Appbar.Content title={title} titleStyle={{ fontSize: 18, fontWeight: "600" }} />
       <Appbar.Action
         icon={isDarkMode ? "white-balance-sunny" : "moon-waning-crescent"}
         onPress={toggleTheme}
+        size={28}
       />
     </Appbar.Header>
   );
@@ -32,9 +33,9 @@ function HomeHeader({ navigation, title }) {
 // Кастомный header для SearchStack
 function SearchHeader({ navigation, title }) {
   return (
-    <Appbar.Header>
-      <Appbar.BackAction onPress={() => navigation.goBack()} />
-      <Appbar.Content title={title} />
+    <Appbar.Header style={{ height: 56, paddingHorizontal: 12 }} statusBarHeight={0}>
+      <Appbar.BackAction onPress={() => navigation.goBack()} size={24} />
+      <Appbar.Content title={title} titleStyle={{ fontSize: 18, fontWeight: "600" }} />
     </Appbar.Header>
   );
 }
