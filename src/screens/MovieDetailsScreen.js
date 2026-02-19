@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, Image, StyleSheet, FlatList } from "react-native";
 import { ActivityIndicator, Text, useTheme } from "react-native-paper";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from "../constants/config";
 import { getMovieDetails } from "../services/tmdbService";
 import { useAppTheme } from "../context/ThemeContext";
@@ -72,9 +73,16 @@ const MovieDetailsScreen = ({ route }) => {
         </Text>
 
         <View style={styles.infoRow}>
-          <Text style={[styles.rating, { color: colors.primary }]}>
-            ⭐ {movie.vote_average?.toFixed(1)}
-          </Text>
+          <View style={styles.ratingContainer}>
+            <MaterialCommunityIcons
+              name="star"
+              size={18}
+              color={colors.primary}
+            />
+            <Text style={[styles.rating, { color: colors.primary }]}>
+              {movie.vote_average?.toFixed(1)}
+            </Text>
+          </View>
           <Text style={[styles.year, { color: colors.onSurfaceVariant }]}>
             {new Date(movie.release_date).getFullYear()}
           </Text>
@@ -214,10 +222,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 12,
+  },
   rating: {
     fontSize: 16,
     fontWeight: "600",
-    marginRight: 12,
+    marginLeft: 4,
   },
   year: {
     fontSize: 14,

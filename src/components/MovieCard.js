@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TMDB_IMAGE_BASE_URL } from "../constants/config";
 
 const MovieCard = ({ movie, onPress }) => {
@@ -39,9 +40,16 @@ const MovieCard = ({ movie, onPress }) => {
               { backgroundColor: colors.primaryContainer },
             ]}
           >
-            <Text style={[styles.ratingText, { color: colors.primary }]}>
-              ⭐ {movie.vote_average?.toFixed(1) || "N/A"}
-            </Text>
+            <View style={styles.ratingContent}>
+              <MaterialCommunityIcons
+                name="star"
+                size={14}
+                color={colors.primary}
+              />
+              <Text style={[styles.ratingText, { color: colors.primary }]}>
+                {movie.vote_average?.toFixed(1) || "N/A"}
+              </Text>
+            </View>
           </View>
           <Text style={[styles.year, { color: colors.onSurfaceVariant }]}>
             {new Date(movie.release_date).getFullYear() || "N/A"}
@@ -57,7 +65,7 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 8,
     elevation: 3,
-    borderRadius: 12, // added
+    borderRadius: 12,
     overflow: "hidden",
   },
   poster: {
@@ -89,6 +97,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
+  },
+  ratingContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   ratingText: {
     fontSize: 12,
