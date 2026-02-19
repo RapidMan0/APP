@@ -8,8 +8,8 @@ const MovieCard = ({ movie, onPress }) => {
   const posterUrl = `${TMDB_IMAGE_BASE_URL}${movie.poster_path}`;
 
   return (
-    <Card 
-      style={[styles.container, { backgroundColor: colors.surface }]} 
+    <Card
+      style={[styles.container, { backgroundColor: colors.surface }]}
       onPress={() => onPress(movie)}
     >
       <Card.Cover
@@ -17,19 +17,28 @@ const MovieCard = ({ movie, onPress }) => {
         style={styles.poster}
         resizeMode="cover"
       />
-      <Card.Content style={[styles.content, { backgroundColor: colors.surface }]}>
+      <Card.Content
+        style={[styles.content, { backgroundColor: colors.surface }]}
+      >
         <View style={styles.titleContainer}>
-          <Text 
-            variant="titleSmall" 
-            numberOfLines={2} 
+          <Text
+            variant="titleSmall"
+            numberOfLines={2}
             style={[styles.title, { color: colors.onSurface }]}
           >
             {movie.title}
           </Text>
         </View>
 
-        <View style={[styles.infoRow, { borderTopColor: colors.outlineVariant }]}>
-          <View style={[styles.ratingBadge, { backgroundColor: colors.primaryContainer }]}>
+        <View
+          style={[styles.infoRow, { borderTopColor: colors.outlineVariant }]}
+        >
+          <View
+            style={[
+              styles.ratingBadge,
+              { backgroundColor: colors.primaryContainer },
+            ]}
+          >
             <Text style={[styles.ratingText, { color: colors.primary }]}>
               ⭐ {movie.vote_average?.toFixed(1) || "N/A"}
             </Text>
@@ -48,6 +57,8 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 8,
     elevation: 3,
+    borderRadius: 12, // added
+    overflow: "hidden",
   },
   poster: {
     height: 300,
