@@ -1,24 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, Image, StyleSheet, FlatList } from "react-native";
-import { ActivityIndicator, Text, useTheme } from "react-native-paper";
+import { ActivityIndicator, Text, useTheme, Button } from "react-native-paper";
+import { useAuth } from "../context/AuthContext";
+import { getAccountFavoriteMovies } from "../services/tmdbService";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from "../constants/config";
 import { getMovieDetails } from "../services/tmdbService";
 import { useAppTheme } from "../context/ThemeContext";
 
-const MovieDetailsScreen = ({ route }) => {
+const MovieDetailsScreen = ({ route, navigation }) => {
   const { movieId } = route.params;
   const { theme } = useAppTheme();
   const { colors } = useTheme();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
+  const { sessionId, accountId, setFavorite } = useAuth();
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
         const response = await getMovieDetails(movieId);
         setMovie(response.data);
+        // If user is logged in, check if this movie is in favorites (first page check)
+        try {
+          if (sessionId && accountId) {
+            const favRes = await getAccountFavoriteMovies(accountId, sessionId, 1);
+            const favs = favRes.data.results || [];
+            const found = favs.find((m) => m.id === response.data.id);
+            setIsFavorite(!!found);
+          }
+        } catch (err) {
+          // ignore favorites check errors
+        }
       } catch (err) {
         setError("Ошибка загрузки деталей фильма");
         console.error(err);
@@ -71,6 +87,28 @@ const MovieDetailsScreen = ({ route }) => {
         <Text style={[styles.title, { color: colors.onSurface }]}>
           {movie.title}
         </Text>
+
+        <Button
+          mode={isFavorite ? "contained" : "outlined"}
+          onPress={async () => {
+            if (!sessionId || !accountId) {
+              navigation.navigate("Login");
+              return;
+            }
+            setFavLoading(true);
+            try {
+              await setFavorite(movie.id, !isFavorite);
+              setIsFavorite((v) => !v);
+            } catch (err) {
+              console.error(err);
+            } finally {
+              setFavLoading(false);
+            }
+          }}
+          style={styles.favoriteButton}
+        >
+          {favLoading ? "..." : isFavorite ? "В избранном" : "Добавить в избранное"}
+        </Button>
 
         <View style={styles.infoRow}>
           <View style={styles.ratingContainer}>
@@ -238,6 +276,10 @@ const styles = StyleSheet.create({
   },
   runtime: {
     fontSize: 14,
+  },
+  favoriteButton: {
+    marginTop: 8,
+    marginBottom: 12,
   },
   genresContainer: {
     flexDirection: "row",

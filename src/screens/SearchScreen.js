@@ -1,10 +1,11 @@
 import { useState, useCallback } from "react";
+import { View, FlatList, StyleSheet } from "react-native";
 import {
-  View,
-  FlatList,
-  StyleSheet,
-} from "react-native";
-import { TextInput, ActivityIndicator, Text, useTheme } from "react-native-paper";
+  TextInput,
+  ActivityIndicator,
+  Text,
+  useTheme,
+} from "react-native-paper";
 import MovieCard from "../components/MovieCard";
 import { searchMovies } from "../services/tmdbService";
 import { useAppTheme } from "../context/ThemeContext";
@@ -40,13 +41,24 @@ const SearchScreen = ({ navigation }) => {
     }
   };
 
-  const handleMoviePress = useCallback((movie) => {
-    navigation.navigate("MovieDetails", { movieId: movie.id });
-  }, [navigation]);
+  const handleMoviePress = useCallback(
+    (movie) => {
+      navigation.navigate("MovieDetails", { movieId: movie.id });
+    },
+    [navigation],
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderBottomColor: colors.outline }]}>
+      <View
+        style={[
+          styles.searchContainer,
+          {
+            backgroundColor: colors.surface,
+            borderBottomColor: colors.outline,
+          },
+        ]}
+      >
         <TextInput
           style={styles.input}
           placeholder="Поиск фильмов..."
@@ -66,7 +78,11 @@ const SearchScreen = ({ navigation }) => {
         </View>
       ) : searched && movies.length === 0 ? (
         <View style={styles.centerContainer}>
-          <Text style={[styles.noResultsText, { color: colors.onSurfaceVariant }]}>Фильмы не найдены</Text>
+          <Text
+            style={[styles.noResultsText, { color: colors.onSurfaceVariant }]}
+          >
+            Фильмы не найдены
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -91,8 +107,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderBottomWidth: 1,
   },
-  input: {
-  },
+  input: {},
   centerContainer: {
     flex: 1,
     justifyContent: "center",

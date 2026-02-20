@@ -77,3 +77,53 @@ export const discoverMoviesByGenre = async (genreId, page = 1) => {
     },
   });
 };
+
+// Authentication: create request token
+export const createRequestToken = () => {
+  return tmdbClient.get("/authentication/token/new");
+};
+
+// Validate request token with username/password
+export const validateRequestToken = (username, password, requestToken) => {
+  return tmdbClient.post(`/authentication/token/validate_with_login`, {
+    username,
+    password,
+    request_token: requestToken,
+  });
+};
+
+// Create a session from a validated request token
+export const createSession = (requestToken) => {
+  return tmdbClient.post(`/authentication/session/new`, {
+    request_token: requestToken,
+  });
+};
+
+// Get account details (requires session_id)
+export const getAccountDetails = (sessionId) => {
+  return tmdbClient.get(`/account`, {
+    params: { session_id: sessionId },
+  });
+};
+
+// Get account favorite movies
+export const getAccountFavoriteMovies = (accountId, sessionId, page = 1) => {
+  return tmdbClient.get(`/account/${accountId}/favorite/movies`, {
+    params: { session_id: sessionId, page },
+  });
+};
+
+// Mark/unmark movie as favorite (requires session)
+export const markAsFavorite = (accountId, sessionId, mediaId, favorite = true) => {
+  return tmdbClient.post(
+    `/account/${accountId}/favorite`,
+    {
+      media_type: "movie",
+      media_id: mediaId,
+      favorite,
+    },
+    {
+      params: { session_id: sessionId },
+    },
+  );
+};
