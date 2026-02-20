@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MD3LightTheme, MD3DarkTheme } from "react-native-paper";
 
 const ThemeContext = createContext();
@@ -68,9 +69,31 @@ const darkTheme = {
 
 export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const THEME_KEY = "theme_is_dark";
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const value = await AsyncStorage.getItem(THEME_KEY);
+        if (value !== null) {
+          setIsDarkMode(value === "true");
+        }
+      } catch (e) {
+        console.error("Failed to load theme:", e);
+      }
+    };
+    load();
+  }, []);
+
+  const toggleTheme = async () => {
+    try {
+      const next = !isDarkMode;
+      setIsDarkMode(next);
+      await AsyncStorage.setItem(THEME_KEY, next ? "true" : "false");
+    } catch (e) {
+      console.error("Failed to persist theme:", e);
+      setIsDarkMode((prev) => !prev);
+    }
   };
 
   const theme = isDarkMode ? darkTheme : lightTheme;
