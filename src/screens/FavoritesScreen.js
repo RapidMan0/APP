@@ -22,8 +22,23 @@ const FavoritesScreen = ({ navigation }) => {
       setLoading(true);
       const res = await getAccountFavoriteMovies(accountId, sessionId, p);
       const results = res.data.results || [];
-      if (p === 1) setMovies(results);
-      else setMovies((prev) => [...prev, ...results]);
+      
+      if (p === 1) {
+        // Удаляем дубликаты на первой странице
+        const uniqueMovies = Array.from(
+          new Map(results.map((movie) => [movie.id, movie])).values()
+        );
+        setMovies(uniqueMovies);
+      } else {
+        // Фильтруем дубликаты при добавлении новых фильмов
+        setMovies((prev) => {
+          const existingIds = new Set(prev.map(m => m.id));
+          const uniqueNewMovies = results.filter(
+            (movie) => !existingIds.has(movie.id)
+          );
+          return [...prev, ...uniqueNewMovies];
+        });
+      }
       setHasMore(res.data.page < res.data.total_pages);
     } catch (err) {
       console.error(err);

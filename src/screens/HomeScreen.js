@@ -91,9 +91,16 @@ const HomeScreen = ({ navigation }) => {
       // Проверяем, что компонент все еще смонтирован и таб не изменился
       if (isMountedRef.current && activeTabRef.current === tab) {
         if (page === 1) {
-          setMovies(filteredResults); // Замена, а не добавление для первой страницы
+          setMovies(filteredResults);
         } else {
-          setMovies((prevMovies) => [...prevMovies, ...filteredResults]); // Добавление для последующих страниц
+          // Фильтруем дубликаты при добавлении новых фильмов
+          setMovies((prevMovies) => {
+            const existingIds = new Set(prevMovies.map((m) => m.id));
+            const uniqueNewMovies = filteredResults.filter(
+              (movie) => !existingIds.has(movie.id),
+            );
+            return [...prevMovies, ...uniqueNewMovies];
+          });
         }
       }
     } catch (err) {

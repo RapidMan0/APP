@@ -73,7 +73,11 @@ const GenresScreen = ({ navigation }) => {
         const filteredMovies = response.data.results.filter(
           (movie) => movie.vote_average > 0
         );
-        setMovies(filteredMovies);
+        // Удаляем дубликаты по ID
+        const uniqueMovies = Array.from(
+          new Map(filteredMovies.map((movie) => [movie.id, movie])).values()
+        );
+        setMovies(uniqueMovies);
       })
       .catch(() => {
         setError("Ошибка загрузки фильмов по жанру");
@@ -93,10 +97,14 @@ const GenresScreen = ({ navigation }) => {
       const nextPage = currentPage + 1;
       discoverMoviesByGenre(selectedGenreId, nextPage)
         .then((response) => {
-          setMovies((prevMovies) => [
-            ...prevMovies,
-            ...response.data.results,
-          ]);
+          // Фильтруем дубликаты при добавлении новых фильмов
+          setMovies((prevMovies) => {
+            const existingIds = new Set(prevMovies.map(m => m.id));
+            const uniqueNewMovies = response.data.results.filter(
+              (movie) => !existingIds.has(movie.id)
+            );
+            return [...prevMovies, ...uniqueNewMovies];
+          });
           setCurrentPage(nextPage);
         })
         .catch(() => {

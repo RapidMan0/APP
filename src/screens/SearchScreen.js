@@ -32,7 +32,11 @@ const SearchScreen = ({ navigation }) => {
       const filteredMovies = response.data.results.filter(
         (movie) => movie.vote_average > 0,
       );
-      setMovies(filteredMovies);
+      // Удаляем дубликаты по ID
+      const uniqueMovies = Array.from(
+        new Map(filteredMovies.map((movie) => [movie.id, movie])).values()
+      );
+      setMovies(uniqueMovies);
       setSearched(true);
     } catch (err) {
       console.error(err);
