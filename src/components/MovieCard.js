@@ -35,10 +35,7 @@ const MovieCard = ({ movie, onPress }) => {
           style={[styles.infoRow, { borderTopColor: colors.outlineVariant }]}
         >
           <View
-            style={[
-              styles.ratingBadge,
-              { backgroundColor: colors.primaryContainer },
-            ]}
+            style={[styles.ratingBadge, { backgroundColor: colors.primaryContainer }]}
           >
             <View style={styles.ratingContent}>
               <MaterialCommunityIcons
@@ -62,7 +59,10 @@ const MovieCard = ({ movie, onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // Заменено: убран flex:1 и добавлены flexBasis/maxWidth,
+    // чтобы карточка занимала фиксированную ширину в двух колонках
+    flexBasis: "48%",
+    maxWidth: "48%",
     margin: 8,
     elevation: 3,
     borderRadius: 12,
