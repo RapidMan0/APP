@@ -58,7 +58,11 @@ export const getMovieDetails = (movieId) => {
 
 // Получить трейлер фильма
 export const getMovieVideos = (movieId) => {
-  return tmdbClient.get(`/movie/${movieId}/videos`);
+  // Request videos in English first to increase chance of getting official trailers
+  // (some videos aren't returned when requesting localized `ru-RU`).
+  return tmdbClient.get(`/movie/${movieId}/videos`, {
+    params: { language: "en-US" },
+  });
 };
 
 // Получить жанры фильмов

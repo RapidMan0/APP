@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, Image, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  ScrollView,
+  Image,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Linking,
+} from "react-native";
 import { ActivityIndicator, Text, useTheme, Button } from "react-native-paper";
 import { useAuth } from "../context/AuthContext";
-import { getAccountFavoriteMovies } from "../services/tmdbService";
+import { getAccountFavoriteMovies, getMovieVideos } from "../services/tmdbService";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from "../constants/config";
 import { getMovieDetails } from "../services/tmdbService";
 import { useAppTheme } from "../context/ThemeContext";
+import TrailerContainer from "../components/TrailerContainer";
 
 const MovieDetailsScreen = ({ route, navigation }) => {
   const { movieId } = route.params;
@@ -15,6 +24,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [trailer, setTrailer] = useState(null); // will hold first YouTube trailer
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
   const { sessionId, accountId, setFavorite } = useAuth();
@@ -24,6 +34,35 @@ const MovieDetailsScreen = ({ route, navigation }) => {
       try {
         const response = await getMovieDetails(movieId);
         setMovie(response.data);
+
+        // load trailer(s) from TMDB videos endpoint
+        try {
+          const vidRes = await getMovieVideos(movieId);
+          const videos = vidRes.data.results || [];
+
+          // Prefer official Trailer, then Teaser, then any YouTube video
+          const youTube = videos.filter(
+            (v) => (v.site || "").toLowerCase() === "youtube",
+          );
+          const preferred =
+            youTube.find((v) => (v.type || "").toLowerCase() === "trailer") ||
+            youTube.find((v) => (v.type || "").toLowerCase() === "teaser") ||
+            youTube[0] ||
+            null;
+
+          if (preferred) {
+            setTrailer(preferred);
+          } else {
+            // helpful debug when trailer exists on TMDB but not returned
+            if (videos.length > 0) {
+              console.debug("Videos present but no YouTube preferred found:", videos);
+            }
+          }
+        } catch (err) {
+          // don't fail whole screen if trailers are missing
+          console.error("Failed to load videos", err);
+        }
+
         // If user is logged in, check if this movie is in favorites (first page check)
         try {
           if (sessionId && accountId) {
@@ -150,10 +189,14 @@ const MovieDetailsScreen = ({ route, navigation }) => {
           </View>
         )}
 
+        {trailer && (
+          <>
+            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Трейлер</Text>
+            <TrailerContainer trailer={trailer} />
+          </>
+        )}
+
         <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>
-          Описание
-        </Text>
-        <Text style={[styles.overview, { color: colors.onSurfaceVariant }]}>
           {movie.overview || "Описание недоступно"}
         </Text>
 
