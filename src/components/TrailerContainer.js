@@ -1,5 +1,11 @@
 import React from "react";
-import { View, TouchableOpacity, Image, StyleSheet, Linking } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Linking,
+} from "react-native";
 import { useTheme, Text } from "react-native-paper";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
@@ -15,13 +21,19 @@ const TrailerContainer = ({ trailer }) => {
   const thumb = `https://img.youtube.com/vi/${trailer.key}/hqdefault.jpg`;
 
   const open = () => {
-    Linking.openURL(url).catch((e) => console.error("Unable to open trailer", e));
+    Linking.openURL(url).catch((e) =>
+      console.error("Unable to open trailer", e),
+    );
   };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.touchable} onPress={open}>
-        <Image source={{ uri: thumb }} style={styles.image} resizeMode="cover" />
+        <Image
+          source={{ uri: thumb }}
+          style={styles.image}
+          resizeMode="cover"
+        />
         <MaterialCommunityIcons
           name="play-circle-outline"
           size={64}
@@ -30,8 +42,12 @@ const TrailerContainer = ({ trailer }) => {
         />
       </TouchableOpacity>
       {trailer.name && (
-        <Text style={[styles.label, { color: colors.onSurface }]}
-              numberOfLines={1}>🔊 {trailer.name}</Text>
+        <Text
+          style={[styles.label, { color: colors.onSurface }]}
+          numberOfLines={1}
+        >
+          🔊 {trailer.name}
+        </Text>
       )}
     </View>
   );

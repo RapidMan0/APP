@@ -13,7 +13,7 @@ import { useAppTheme } from "../context/ThemeContext";
 
 const HomeScreen = ({ navigation }) => {
   const { colors } = useTheme();
-  const { theme } = useAppTheme();
+  useAppTheme();
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, Button, ActivityIndicator, useTheme } from "react-native-paper";
 import { useAuth } from "../context/AuthContext";
@@ -6,7 +6,7 @@ import { getAccountDetails } from "../services/tmdbService";
 
 const AccountScreen = ({ navigation }) => {
   const { colors } = useTheme();
-  const { sessionId, accountId, logout } = useAuth();
+  const { sessionId, logout } = useAuth();
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(true);
 

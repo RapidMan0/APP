@@ -20,7 +20,7 @@ import ActorModal from "../components/ActorModal";
 
 const MovieDetailsScreen = ({ route, navigation }) => {
   const { movieId } = route.params;
-  const { theme } = useAppTheme();
+  useAppTheme();
   const { colors } = useTheme();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
