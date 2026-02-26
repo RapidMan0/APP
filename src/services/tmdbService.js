@@ -131,3 +131,8 @@ export const markAsFavorite = (accountId, sessionId, mediaId, favorite = true) =
     },
   );
 };
+
+// Get person (actor) details
+export const getPersonDetails = (personId) => {
+  return tmdbClient.get(`/person/${personId}`);
+};

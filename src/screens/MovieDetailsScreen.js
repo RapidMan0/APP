@@ -10,12 +10,13 @@ import {
 } from "react-native";
 import { ActivityIndicator, Text, useTheme, Button } from "react-native-paper";
 import { useAuth } from "../context/AuthContext";
-import { getAccountFavoriteMovies, getMovieVideos } from "../services/tmdbService";
+import { getAccountFavoriteMovies, getMovieVideos, getPersonDetails } from "../services/tmdbService";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from "../constants/config";
 import { getMovieDetails } from "../services/tmdbService";
 import { useAppTheme } from "../context/ThemeContext";
 import TrailerContainer from "../components/TrailerContainer";
+import ActorModal from "../components/ActorModal";
 
 const MovieDetailsScreen = ({ route, navigation }) => {
   const { movieId } = route.params;
@@ -25,6 +26,9 @@ const MovieDetailsScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [trailer, setTrailer] = useState(null); // will hold first YouTube trailer
+  const [actorModalVisible, setActorModalVisible] = useState(false);
+  const [actorLoading, setActorLoading] = useState(false);
+  const [actorDetails, setActorDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
   const { sessionId, accountId, setFavorite } = useAuth();
@@ -84,6 +88,25 @@ const MovieDetailsScreen = ({ route, navigation }) => {
 
     fetchDetails();
   }, [movieId]);
+
+  const openActorModal = async (personId) => {
+    try {
+      setActorModalVisible(true);
+      setActorLoading(true);
+      const res = await getPersonDetails(personId);
+      setActorDetails(res.data);
+    } catch (err) {
+      console.error("Failed to load person details", err);
+      setActorDetails(null);
+    } finally {
+      setActorLoading(false);
+    }
+  };
+
+  const closeActorModal = () => {
+    setActorModalVisible(false);
+    setActorDetails(null);
+  };
 
   if (loading) {
     return (
@@ -209,7 +232,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
               data={movie.credits.cast.slice(0, 10)}
               keyExtractor={(item, index) => `${item.id}-${index}`}
               renderItem={({ item: actor }) => (
-                <View style={styles.castMember}>
+                <TouchableOpacity style={styles.castMember} onPress={() => openActorModal(actor.id)}>
                   {actor.profile_path && (
                     <Image
                       source={{
@@ -233,13 +256,14 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                   >
                     {actor.character}
                   </Text>
-                </View>
+                </TouchableOpacity>
               )}
               horizontal
               showsHorizontalScrollIndicator={false}
               scrollEventThrottle={16}
               contentContainerStyle={styles.castListContent}
             />
+            <ActorModal visible={actorModalVisible} loading={actorLoading} actor={actorDetails} onDismiss={closeActorModal} />
           </>
         )}
 
