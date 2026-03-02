@@ -233,17 +233,35 @@ const MovieDetailsScreen = ({ route, navigation }) => {
               keyExtractor={(item, index) => `${item.id}-${index}`}
               renderItem={({ item: actor }) => (
                 <TouchableOpacity style={styles.castMember} onPress={() => openActorModal(actor.id)}>
-                  {actor.profile_path && (
+                  {actor.profile_path ? (
                     <Image
                       source={{
                         uri: `${TMDB_IMAGE_BASE_URL}${actor.profile_path}`,
                       }}
                       style={styles.castPhoto}
                     />
+                  ) : (
+                    // show placeholder icon when no photo available
+                    <View
+                      style={[
+                        styles.castPhoto,
+                        {
+                          justifyContent: "center",
+                          alignItems: "center",
+                          backgroundColor: colors.onSurfaceVariant + "20", // subtle background
+                        },
+                      ]}
+                    >
+                      <MaterialCommunityIcons
+                        name="account"
+                        size={32}
+                        color={colors.onSurfaceVariant}
+                      />
+                    </View>
                   )}
                   <Text
                     style={[styles.actorName, { color: colors.onSurface }]}
-                    numberOfLines={1}
+                    numberOfLines={2}
                   >
                     {actor.name}
                   </Text>
@@ -376,9 +394,9 @@ const styles = StyleSheet.create({
     paddingRight: 16,
   },
   castMember: {
-    marginRight: 12,
+    marginRight: 6, // tighter horizontal gap between actor cards
     alignItems: "center",
-    width: 80,
+    width: 90, // slightly wider to give more room for two lines
   },
   castPhoto: {
     width: 70,
@@ -387,7 +405,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   actorName: {
-    fontSize: 11,
+    fontSize: 10, // a tad smaller to fit two lines
     fontWeight: "600",
     textAlign: "center",
   },
