@@ -207,6 +207,7 @@ const HomeScreen = ({ navigation }) => {
         )}
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle={styles.listContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
@@ -238,7 +239,12 @@ const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: "space-between",
-    paddingHorizontal: 5,
+    marginBottom: 12,
+  },
+  listContent: {
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    paddingBottom: 16,
   },
   errorText: {
     color: "#e50914",

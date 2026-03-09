@@ -59,11 +59,11 @@ const MovieCard = ({ movie, onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    // Заменено: убран flex:1 и добавлены flexBasis/maxWidth,
-    // чтобы карточка занимала фиксированную ширину в двух колонках
+    // В FlatList используется columnWrapperStyle с justifyContent: 'space-between'
+    // поэтому у карточек не должно быть боковых отступов, чтобы они ровно встали в сетку.
     flexBasis: "48%",
     maxWidth: "48%",
-    margin: 8,
+    marginBottom: 12,
     elevation: 3,
     borderRadius: 12,
     overflow: "hidden",
