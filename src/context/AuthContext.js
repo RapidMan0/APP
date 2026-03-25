@@ -6,6 +6,7 @@ import {
   createSession,
   getAccountDetails,
   markAsFavorite,
+  getAccountFavoriteMovies,
 } from "../services/tmdbService";
 
 const SESSION_KEY = "tmdb_session_id";
@@ -18,6 +19,34 @@ export const AuthProvider = ({ children }) => {
   const [accountId, setAccountId] = useState(null);
   const [favoritesUpdatedAt, setFavoritesUpdatedAt] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [favoriteMovieIds, setFavoriteMovieIds] = useState(new Set());
+
+  // Load favorite movies when session is restored
+  useEffect(() => {
+    const loadFavorites = async () => {
+      if (!sessionId || !accountId) return;
+      try {
+        const ids = new Set();
+        let page = 1;
+        let hasMore = true;
+        
+        while (hasMore) {
+          const res = await getAccountFavoriteMovies(accountId, sessionId, page);
+          const results = res.data.results || [];
+          results.forEach((movie) => ids.add(movie.id));
+          
+          hasMore = res.data.page < res.data.total_pages;
+          page++;
+        }
+        
+        setFavoriteMovieIds(ids);
+      } catch (err) {
+        console.error("Error loading favorites:", err);
+      }
+    };
+    
+    loadFavorites();
+  }, [sessionId, accountId]);
 
   useEffect(() => {
     const restore = async () => {
@@ -106,6 +135,7 @@ export const AuthProvider = ({ children }) => {
     setSessionId(null);
     setAccountId(null);
     setFavoritesUpdatedAt(0);
+    setFavoriteMovieIds(new Set());
   };
 
   const setFavorite = async (movieId, favorite = true) => {
@@ -113,6 +143,18 @@ export const AuthProvider = ({ children }) => {
       throw new Error("Not authenticated");
     }
     const res = await markAsFavorite(accountId, sessionId, movieId, favorite);
+    
+    // Update local favorite IDs immediately
+    setFavoriteMovieIds((prev) => {
+      const updated = new Set(prev);
+      if (favorite) {
+        updated.add(movieId);
+      } else {
+        updated.delete(movieId);
+      }
+      return updated;
+    });
+    
     // update timestamp so listeners can refetch favorites
     try {
       setFavoritesUpdatedAt(Date.now());
@@ -130,6 +172,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         setFavorite,
         favoritesUpdatedAt,
+        favoriteMovieIds,
       }}
     >
       {children}

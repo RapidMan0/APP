@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { ActivityIndicator, Text, useTheme, Button } from "react-native-paper";
 import { useAuth } from "../context/AuthContext";
-import { getAccountFavoriteMovies, getMovieVideos, getPersonDetails } from "../services/tmdbService";
+import { getMovieVideos, getPersonDetails } from "../services/tmdbService";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from "../constants/config";
 import { getMovieDetails } from "../services/tmdbService";
@@ -31,7 +31,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
   const [actorDetails, setActorDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
-  const { sessionId, accountId, setFavorite } = useAuth();
+  const { sessionId, accountId, setFavorite, favoriteMovieIds } = useAuth();
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -67,16 +67,9 @@ const MovieDetailsScreen = ({ route, navigation }) => {
           console.error("Failed to load videos", err);
         }
 
-        // If user is logged in, check if this movie is in favorites (first page check)
-        try {
-          if (sessionId && accountId) {
-            const favRes = await getAccountFavoriteMovies(accountId, sessionId, 1);
-            const favs = favRes.data.results || [];
-            const found = favs.find((m) => m.id === response.data.id);
-            setIsFavorite(!!found);
-          }
-        } catch (err) {
-          // ignore favorites check errors
+        // Check if movie is in favorites using the context state
+        if (sessionId && accountId && favoriteMovieIds) {
+          setIsFavorite(favoriteMovieIds.has(response.data.id));
         }
       } catch (err) {
         setError("Ошибка загрузки деталей фильма");
@@ -87,7 +80,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
     };
 
     fetchDetails();
-  }, [movieId]);
+  }, [movieId, favoriteMovieIds, sessionId, accountId]);
 
   const openActorModal = async (personId) => {
     try {
