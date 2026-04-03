@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   ScrollView,
@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   Linking,
+  Animated,
 } from "react-native";
 import { ActivityIndicator, Text, useTheme, Button } from "react-native-paper";
 import { useAuth } from "../context/AuthContext";
@@ -32,6 +33,35 @@ const MovieDetailsScreen = ({ route, navigation }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
   const { sessionId, accountId, setFavorite, favoriteMovieIds } = useAuth();
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    let animation;
+    if (favLoading) {
+      animation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 0.4,
+            duration: 1000,
+            useNativeDriver: false,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: false,
+          }),
+        ])
+      );
+      animation.start();
+    } else {
+      pulseAnim.setValue(1);
+    }
+    return () => {
+      if (animation) {
+        animation.stop();
+      }
+    };
+  }, [favLoading, pulseAnim]);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -143,27 +173,30 @@ const MovieDetailsScreen = ({ route, navigation }) => {
           {movie.title}
         </Text>
 
-        <Button
-          mode={isFavorite ? "contained" : "outlined"}
-          onPress={async () => {
-            if (!sessionId || !accountId) {
-              navigation.navigate("Login");
-              return;
-            }
-            setFavLoading(true);
-            try {
-              await setFavorite(movie.id, !isFavorite);
-              setIsFavorite((v) => !v);
-            } catch (err) {
-              console.error(err);
-            } finally {
-              setFavLoading(false);
-            }
-          }}
-          style={styles.favoriteButton}
-        >
-          {favLoading ? "..." : isFavorite ? "В избранном" : "Добавить в избранное"}
-        </Button>
+        <Animated.View style={[styles.favoriteButton, { opacity: pulseAnim }]}>
+          <Button
+            disabled={favLoading}
+            mode={isFavorite ? "contained" : "outlined"}
+            onPress={async () => {
+              if (!sessionId || !accountId) {
+                navigation.navigate("Login");
+                return;
+              }
+              setFavLoading(true);
+              try {
+                await setFavorite(movie.id, !isFavorite);
+                setIsFavorite((v) => !v);
+              } catch (err) {
+                console.error(err);
+              } finally {
+                setFavLoading(false);
+              }
+            }}
+            icon={isFavorite ? "heart" : "heart-outline"}
+          >
+            {isFavorite ? "В избранном" : "Добавить в избранное"}
+          </Button>
+        </Animated.View>
 
         <View style={styles.infoRow}>
           <View style={styles.ratingContainer}>
