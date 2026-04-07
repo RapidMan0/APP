@@ -111,9 +111,14 @@ export const getAccountDetails = (sessionId) => {
 };
 
 // Get account favorite movies
-export const getAccountFavoriteMovies = (accountId, sessionId, page = 1) => {
+export const getAccountFavoriteMovies = (
+  accountId,
+  sessionId,
+  page = 1,
+  sortBy = "created_at.desc"
+) => {
   return tmdbClient.get(`/account/${accountId}/favorite/movies`, {
-    params: { session_id: sessionId, page },
+    params: { session_id: sessionId, page, sort_by: sortBy },
   });
 };
 
