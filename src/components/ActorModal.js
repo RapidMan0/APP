@@ -1,9 +1,9 @@
 import React from "react";
-import { View, Image, StyleSheet, ScrollView } from "react-native";
+import { View, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity } from "react-native";
 import { Modal, Portal, Text, Button, useTheme, ActivityIndicator } from "react-native-paper";
 import { TMDB_IMAGE_BASE_URL } from "../constants/config";
 
-const ActorModal = ({ visible, loading, actor, onDismiss }) => {
+const ActorModal = ({ visible, loading, actor, onDismiss, movieCredits = [], movieCreditsLoading = false, navigation }) => {
   const { colors } = useTheme();
 
   const translateDepartment = (dept) => {
@@ -72,6 +72,51 @@ const ActorModal = ({ visible, loading, actor, onDismiss }) => {
 
             <Text style={[styles.biography, { color: colors.onSurfaceVariant }]}>{actor?.biography ? actor.biography.trim() : "Биография отсутствует."}</Text>
 
+            {movieCredits.length > 0 && (
+              <>
+                <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Известен за</Text>
+                <FlatList
+                  data={movieCredits}
+                  keyExtractor={(item) => `${item.id}`}
+                  renderItem={({ item: movie }) => (
+                    <TouchableOpacity
+                      style={[styles.movieCard, { backgroundColor: colors.surfaceVariant }]}
+                      onPress={() => {
+                        if (navigation) {
+                          onDismiss();
+                          navigation.push('MovieDetails', { movieId: movie.id });
+                        }
+                      }}
+                    >
+                      <Image
+                        source={{ uri: `${TMDB_IMAGE_BASE_URL}${movie.poster_path}` }}
+                        style={styles.moviePoster}
+                      />
+                      <View style={styles.movieInfo}>
+                        <Text style={[styles.movieTitle, { color: colors.onSurface }]} numberOfLines={2}>
+                          {movie.title}
+                        </Text>
+                        {movie.release_date && (
+                          <Text style={[styles.movieYear, { color: colors.onSurfaceVariant }]}>
+                            {new Date(movie.release_date).getFullYear()}
+                          </Text>
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                  scrollEnabled={false}
+                  nestedScrollEnabled={true}
+                />
+              </>
+            )}
+
+            {movieCreditsLoading && (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" />
+                <Text style={[styles.loadingText, { color: colors.onSurfaceVariant }]}>Загрузка фильмов...</Text>
+              </View>
+            )}
+
             <Button mode="contained" onPress={onDismiss} style={{ marginTop: 12 }}>Закрыть</Button>
           </ScrollView>
         )}
@@ -97,6 +142,14 @@ const styles = StyleSheet.create({
   label: { fontSize: 13, width: 120 },
   value: { fontSize: 13, flex: 1 },
   biography: { marginTop: 12, lineHeight: 20, textAlign: 'left' },
+  sectionTitle: { fontSize: 16, fontWeight: '700', marginTop: 16, marginBottom: 10 },
+  movieCard: { flexDirection: 'row', gap: 10, marginBottom: 10, borderRadius: 8, overflow: 'hidden' },
+  moviePoster: { width: 70, height: 105, borderRadius: 6 },
+  movieInfo: { flex: 1, justifyContent: 'center', paddingHorizontal: 8, paddingVertical: 4 },
+  movieTitle: { fontSize: 13, fontWeight: '600', marginBottom: 4 },
+  movieYear: { fontSize: 12 },
+  loadingContainer: { flexDirection: 'row', alignItems: 'center', gap: 8, marginVertical: 12 },
+  loadingText: { fontSize: 12 },
 });
 
 export default ActorModal;

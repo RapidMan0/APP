@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { ActivityIndicator, Text, useTheme, Button } from "react-native-paper";
 import { useAuth } from "../context/AuthContext";
-import { getMovieVideos, getPersonDetails } from "../services/tmdbService";
+import { getMovieVideos, getPersonDetails, getPersonMovieCredits } from "../services/tmdbService";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TMDB_IMAGE_BASE_URL, TMDB_BACKDROP_URL } from "../constants/config";
 import { getMovieDetails } from "../services/tmdbService";
@@ -30,6 +30,8 @@ const MovieDetailsScreen = ({ route, navigation }) => {
   const [actorModalVisible, setActorModalVisible] = useState(false);
   const [actorLoading, setActorLoading] = useState(false);
   const [actorDetails, setActorDetails] = useState(null);
+  const [movieCredits, setMovieCredits] = useState([]);
+  const [movieCreditsLoading, setMovieCreditsLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
   const { sessionId, accountId, setFavorite, favoriteMovieIds } = useAuth();
@@ -116,19 +118,37 @@ const MovieDetailsScreen = ({ route, navigation }) => {
     try {
       setActorModalVisible(true);
       setActorLoading(true);
-      const res = await getPersonDetails(personId);
-      setActorDetails(res.data);
+      setMovieCreditsLoading(true);
+      
+      const [personRes, creditsRes] = await Promise.all([
+        getPersonDetails(personId),
+        getPersonMovieCredits(personId),
+      ]);
+      
+      setActorDetails(personRes.data);
+      
+      // Sort by popularity and filter out movies with no poster and current movie
+      const credits = creditsRes.data.cast || [];
+      const sortedCredits = credits
+        .filter(movie => movie.poster_path && movie.id !== movieId)
+        .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+        .slice(0, 12); // Limit to 12 movies
+      
+      setMovieCredits(sortedCredits);
     } catch (err) {
       console.error("Failed to load person details", err);
       setActorDetails(null);
+      setMovieCredits([]);
     } finally {
       setActorLoading(false);
+      setMovieCreditsLoading(false);
     }
   };
 
   const closeActorModal = () => {
     setActorModalVisible(false);
     setActorDetails(null);
+    setMovieCredits([]);
   };
 
   if (loading) {
@@ -307,7 +327,15 @@ const MovieDetailsScreen = ({ route, navigation }) => {
               scrollEventThrottle={16}
               contentContainerStyle={styles.castListContent}
             />
-            <ActorModal visible={actorModalVisible} loading={actorLoading} actor={actorDetails} onDismiss={closeActorModal} />
+            <ActorModal 
+              visible={actorModalVisible} 
+              loading={actorLoading} 
+              actor={actorDetails} 
+              onDismiss={closeActorModal}
+              movieCredits={movieCredits}
+              movieCreditsLoading={movieCreditsLoading}
+              navigation={navigation}
+            />
           </>
         )}
 

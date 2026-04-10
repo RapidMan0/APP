@@ -141,3 +141,8 @@ export const markAsFavorite = (accountId, sessionId, mediaId, favorite = true) =
 export const getPersonDetails = (personId) => {
   return tmdbClient.get(`/person/${personId}`);
 };
+
+// Get person's movie credits
+export const getPersonMovieCredits = (personId) => {
+  return tmdbClient.get(`/person/${personId}/movie_credits`);
+};
